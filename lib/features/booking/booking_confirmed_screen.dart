@@ -78,7 +78,7 @@ class BookingConfirmedScreen extends StatelessWidget {
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 52),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                     ),
                     onPressed: () {},
                     child: const Text('Add to Calendar', style: TextStyle(fontWeight: FontWeight.w800)),
@@ -89,7 +89,7 @@ class BookingConfirmedScreen extends StatelessWidget {
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 52),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                     ),
                     onPressed: () {},
                     child: const Text('Share', style: TextStyle(fontWeight: FontWeight.w800)),
@@ -107,7 +107,7 @@ class BookingConfirmedScreen extends StatelessWidget {
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 52),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
               ),
               onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.main, (_) => false),
               child: const Text('Back to Home', style: TextStyle(fontWeight: FontWeight.w800)),

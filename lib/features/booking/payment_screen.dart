@@ -136,7 +136,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.primaryPurple,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                 ),
                 onPressed: booking.isLoading
                     ? null
@@ -235,7 +235,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget _kv(String k, String v, {Color? valueColor}) {
     return Row(
       children: [
-        Text(k, style: TextStyle(color: AppColors.textSecondary)),
+        Text(k, style: const TextStyle(color: AppColors.textSecondary)),
         const Spacer(),
         Text(v, style: TextStyle(fontWeight: FontWeight.w900, color: valueColor)),
       ],
@@ -318,7 +318,7 @@ class _ServiceSummaryCard extends StatelessWidget {
               children: [
                 Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 4),
-                Text(salon, style: TextStyle(color: AppColors.textSecondary)),
+                Text(salon, style: const TextStyle(color: AppColors.textSecondary)),
                 const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -378,7 +378,7 @@ class _PayMethod extends StatelessWidget {
                 children: [
                   Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: AppColors.textSecondary)),
+                  Text(subtitle, style: const TextStyle(color: AppColors.textSecondary)),
                 ],
               ),
             ),

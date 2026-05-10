@@ -74,17 +74,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 10),
-            _NotificationTile(
+            const _NotificationTile(
               title: 'Booking confirmed',
               subtitle: 'Your appointment is locked in. See details now.',
               icon: IconlyBold.tickSquare,
             ),
-            _NotificationTile(
+            const _NotificationTile(
               title: 'Exclusive offer',
               subtitle: 'Use FIRST20 for 20% off your first booking.',
               icon: IconlyBold.ticketStar,
             ),
-            _NotificationTile(
+            const _NotificationTile(
               title: 'New services added',
               subtitle: 'Trending glam packages are now live.',
               icon: IconlyBold.star,
@@ -453,7 +453,7 @@ class _NotificationTile extends StatelessWidget {
               children: [
                 Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(color: AppColors.textSecondary)),
+                Text(subtitle, style: const TextStyle(color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -570,7 +570,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.primaryPurple,
                     minimumSize: const Size(double.infinity, 52),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                   ),
                   onPressed: () {
                     widget.services.applyFilters(

@@ -193,7 +193,7 @@ class _BookingCardUpcoming extends StatelessWidget {
                   children: [
                     Text(b.salonName, style: const TextStyle(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 4),
-                    Text('${b.serviceTitle} - ${b.timeSlot}', style: TextStyle(color: AppColors.textSecondary)),
+                    Text('${b.serviceTitle} - ${b.timeSlot}', style: const TextStyle(color: AppColors.textSecondary)),
                   ],
                 ),
               ),
@@ -205,7 +205,9 @@ class _BookingCardUpcoming extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  style: OutlinedButton.styleFrom(
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                  ),
                   onPressed: () {},
                   child: const Text('Reschedule', style: TextStyle(fontWeight: FontWeight.w800)),
                 ),
@@ -214,7 +216,7 @@ class _BookingCardUpcoming extends StatelessWidget {
               Expanded(
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                     side: const BorderSide(color: AppColors.danger),
                     foregroundColor: AppColors.danger,
                   ),
@@ -227,7 +229,7 @@ class _BookingCardUpcoming extends StatelessWidget {
                 child: FilledButton(
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.primaryPurple,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                   ),
                   onPressed: () {},
                   child: const Text('View Details', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
@@ -278,7 +280,7 @@ class _BookingCardDetailed extends StatelessWidget {
               children: [
                 Text(b.salonName, style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 4),
-                Text(b.serviceTitle, style: TextStyle(color: AppColors.textSecondary)),
+                Text(b.serviceTitle, style: const TextStyle(color: AppColors.textSecondary)),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -339,7 +341,7 @@ class _BookingCardMinimal extends StatelessWidget {
               children: [
                 Text(b.serviceTitle, style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 4),
-                Text('${b.salonName} - ${b.timeSlot}', style: TextStyle(color: AppColors.textSecondary)),
+                Text('${b.salonName} - ${b.timeSlot}', style: const TextStyle(color: AppColors.textSecondary)),
               ],
             ),
           ),

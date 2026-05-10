@@ -163,7 +163,7 @@ class ServiceCard extends StatelessWidget {
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.primaryPurple,
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                         ),
                         onPressed: onBook,
                         child: const Text('Book'),

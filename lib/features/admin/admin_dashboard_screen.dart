@@ -329,7 +329,7 @@ class _AdminBookingTile extends StatelessWidget {
                     maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 4),
                 Text('${booking.bookingId} - ${booking.timeSlot} - ${AppStrings.currencySymbol}${booking.total}',
-                    maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppColors.textSecondary)),
+                    maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -406,7 +406,7 @@ class _ServicesList extends StatelessWidget {
                           Text(service.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900)),
                           const SizedBox(height: 4),
                           Text('${service.category} - ${service.duration} min - ${service.salonLocation}',
-                              maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppColors.textSecondary)),
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textSecondary)),
                         ],
                       ),
                     ),
@@ -492,7 +492,7 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
-              value: _category,
+              initialValue: _category,
               decoration: const InputDecoration(labelText: 'Category'),
               items: const ['Hair', 'Nails', 'Spa', 'Makeup']
                   .map((item) => DropdownMenuItem(value: item, child: Text(item)))
@@ -565,7 +565,7 @@ class _EmptyState extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: Text(message, style: TextStyle(color: AppColors.textSecondary)),
+      child: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
     );
   }
 }
