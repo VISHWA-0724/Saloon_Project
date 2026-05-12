@@ -239,7 +239,7 @@ function migrate(database) {
       gst INTEGER NOT NULL,
       discount INTEGER NOT NULL,
       total INTEGER NOT NULL,
-      status TEXT NOT NULL DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'confirmed', 'past', 'cancelled')),
+      status TEXT NOT NULL DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'confirmed', 'cancelled')),
       booking_id TEXT NOT NULL UNIQUE,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,

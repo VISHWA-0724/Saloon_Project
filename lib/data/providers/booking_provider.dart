@@ -108,8 +108,9 @@ class BookingProvider extends ChangeNotifier {
   BookingBill bill() {
     final base = (_service?.price ?? 0) + _addOnsTotal();
     final gst = ((base * 18) / 100).round();
-    final total = (base + gst - _discount).clamp(0, 1 << 31);
-    return BookingBill(subtotal: base, gst: gst, discount: _discount, total: total);
+    final total = (base + gst - _discount).clamp(0, 1 << 31).toInt();
+    return BookingBill(
+        subtotal: base, gst: gst, discount: _discount, total: total);
   }
 
   Future<bool> applyCoupon({
@@ -121,7 +122,8 @@ class BookingProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      final api = ApiService.create(token: token, onUnauthorized: onUnauthorized);
+      final api =
+          ApiService.create(token: token, onUnauthorized: onUnauthorized);
       final b = bill();
       final res = await api.dio.post('/api/bookings/apply-coupon', data: {
         'code': code.trim(),
@@ -129,7 +131,7 @@ class BookingProvider extends ChangeNotifier {
       });
       final data = res.data as Map<String, dynamic>;
       _coupon = code.trim();
-      _discount = (data['discount'] ?? 0) as int;
+      _discount = _asInt(data['discount']);
       _loading = false;
       notifyListeners();
       return true;
@@ -158,7 +160,8 @@ class BookingProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      final api = ApiService.create(token: token, onUnauthorized: onUnauthorized);
+      final api =
+          ApiService.create(token: token, onUnauthorized: onUnauthorized);
       final b = bill();
       final addOns = _selectedAddOns.map((i) => s.addOns[i].toJson()).toList();
 
@@ -176,7 +179,8 @@ class BookingProvider extends ChangeNotifier {
       });
 
       final data = res.data as Map<String, dynamic>;
-      _lastBooking = BookingModel.fromJson(data['booking'] as Map<String, dynamic>);
+      _lastBooking =
+          BookingModel.fromJson(data['booking'] as Map<String, dynamic>);
       _loading = false;
       notifyListeners();
       return true;
@@ -189,3 +193,8 @@ class BookingProvider extends ChangeNotifier {
   }
 }
 
+int _asInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.round();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
+}

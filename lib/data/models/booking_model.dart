@@ -1,7 +1,7 @@
 class BookingModel {
   final String id;
   final String bookingId;
-  final String status; // upcoming/past/cancelled
+  final String status; // upcoming/confirmed/cancelled
   final String serviceTitle;
   final String salonName;
   final String salonLocation;
@@ -27,14 +27,43 @@ class BookingModel {
         id: (json['_id'] ?? json['id']).toString(),
         bookingId: (json['bookingId'] ?? '').toString(),
         status: (json['status'] ?? 'upcoming').toString(),
-        serviceTitle: (json['serviceTitle'] ?? json['service']?['title'] ?? json['serviceId']?['title'] ?? '').toString(),
-        salonName: (json['salonName'] ?? json['service']?['salonName'] ?? json['serviceId']?['salonName'] ?? 'SalonEase Studio').toString(),
-        salonLocation:
-            (json['salonLocation'] ?? json['service']?['salonLocation'] ?? json['serviceId']?['salonLocation'] ?? 'Premium Street, City').toString(),
-        imageUrl: (json['imageUrl'] ?? json['service']?['images']?[0] ?? json['serviceId']?['images']?[0] ?? '').toString(),
-        date: DateTime.tryParse((json['date'] ?? '').toString()) ?? DateTime.now(),
+        serviceTitle: (json['serviceTitle'] ??
+                json['service']?['title'] ??
+                json['serviceId']?['title'] ??
+                '')
+            .toString(),
+        salonName: (json['salonName'] ??
+                json['service']?['salonName'] ??
+                json['serviceId']?['salonName'] ??
+                'SalonEase Studio')
+            .toString(),
+        salonLocation: (json['salonLocation'] ??
+                json['service']?['salonLocation'] ??
+                json['serviceId']?['salonLocation'] ??
+                'Premium Street, City')
+            .toString(),
+        imageUrl: (json['imageUrl'] ??
+                _firstImage(json['service']) ??
+                _firstImage(json['serviceId']) ??
+                '')
+            .toString()
+            .trim(),
+        date: DateTime.tryParse((json['date'] ?? '').toString()) ??
+            DateTime.now(),
         timeSlot: (json['timeSlot'] ?? '').toString(),
-        total: (json['total'] ?? 0) as int,
+        total: _asInt(json['total']),
       );
 }
 
+String? _firstImage(dynamic service) {
+  if (service is! Map<String, dynamic>) return null;
+  final images = service['images'];
+  if (images is! List || images.isEmpty) return null;
+  return images.first?.toString();
+}
+
+int _asInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.round();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
+}

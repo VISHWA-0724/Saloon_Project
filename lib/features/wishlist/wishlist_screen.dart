@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/routes.dart';
@@ -8,6 +7,7 @@ import '../../data/providers/booking_provider.dart';
 import '../../data/providers/auth_provider.dart';
 import '../../data/providers/service_provider.dart';
 import '../../data/providers/wishlist_provider.dart';
+import '../../shared/widgets/service_grid_delegate.dart';
 import '../../shared/widgets/service_card.dart';
 
 class WishlistScreen extends StatelessWidget {
@@ -25,9 +25,17 @@ class WishlistScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 14, 18, 110),
           children: [
-            Text('Wishlist', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
+            Text('Wishlist',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.w900)),
             const SizedBox(height: 4),
-            Text('Your saved premium services', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+            Text('Your saved premium services',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 16),
             if (items.isEmpty)
               Container(
@@ -39,57 +47,71 @@ class WishlistScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 150,
-                      child: Lottie.network('https://assets9.lottiefiles.com/packages/lf20_kcxm4gkw.json'),
+                    Container(
+                      height: 104,
+                      width: 104,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryPurple.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: const Icon(
+                        Icons.favorite_border_rounded,
+                        color: AppColors.primaryPurple,
+                        size: 46,
+                      ),
                     ),
                     const SizedBox(height: 10),
-                    const Text('No wishlist items yet', style: TextStyle(fontWeight: FontWeight.w800)),
+                    const Text('No wishlist items yet',
+                        style: TextStyle(fontWeight: FontWeight.w800)),
                   ],
                 ),
               )
             else
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: items.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.72,
-                ),
-                itemBuilder: (_, i) {
-                  final s = items[i];
-                  return ServiceCard(
-                    service: s,
-                    onTap: () => Navigator.of(context).pushNamed(AppRoutes.serviceDetail, arguments: s.id),
-                    onBook: () {
-                      context.read<BookingProvider>().start(s);
-                      Navigator.of(context).pushNamed(AppRoutes.serviceDetail, arguments: s.id);
-                    },
-                    onWishlistTap: () async {
-                      await wishlist.remove(
-                        s.id,
-                        token: auth.token,
-                        onUnauthorized: auth.logout,
-                      );
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Removed from wishlist'),
-                          action: SnackBarAction(
-                            label: 'UNDO',
-                            onPressed: () {
-                              wishlist.add(
-                                s.id,
-                                token: auth.token,
-                                onUnauthorized: auth.logout,
-                              );
-                            },
-                          ),
-                        ),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: items.length,
+                    gridDelegate:
+                        serviceGridDelegateForWidth(constraints.maxWidth),
+                    itemBuilder: (_, i) {
+                      final s = items[i];
+                      return ServiceCard(
+                        service: s,
+                        onTap: () => Navigator.of(context).pushNamed(
+                            AppRoutes.serviceDetail,
+                            arguments: s.id),
+                        onBook: () {
+                          context.read<BookingProvider>().start(s);
+                          Navigator.of(context).pushNamed(
+                              AppRoutes.serviceDetail,
+                              arguments: s.id);
+                        },
+                        onWishlistTap: () async {
+                          await wishlist.remove(
+                            s.id,
+                            token: auth.token,
+                            onUnauthorized: auth.logout,
+                          );
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Removed from wishlist'),
+                              action: SnackBarAction(
+                                label: 'UNDO',
+                                onPressed: () {
+                                  wishlist.add(
+                                    s.id,
+                                    token: auth.token,
+                                    onUnauthorized: auth.logout,
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
@@ -101,4 +123,3 @@ class WishlistScreen extends StatelessWidget {
     );
   }
 }
-

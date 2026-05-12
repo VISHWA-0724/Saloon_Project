@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -7,6 +8,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../app/routes.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
+import '../../core/utils/image_url.dart';
 import '../../data/providers/auth_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -24,9 +26,16 @@ class ProfileScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text('SalonEase', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+                Text('SalonEase',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w900)),
                 const Spacer(),
-                IconButton(onPressed: () {}, icon: const Icon(IconlyLight.notification)),
+                IconButton(
+                    onPressed: () => _showProfileSnack(
+                        context, 'No new notifications right now.'),
+                    icon: const Icon(IconlyLight.notification)),
               ],
             ),
             const SizedBox(height: 12),
@@ -43,7 +52,8 @@ class ProfileScreen extends StatelessWidget {
                     placeholder: (_, __) => Shimmer.fromColors(
                       baseColor: const Color(0xFFE9E7F5),
                       highlightColor: Colors.white,
-                      child: Container(height: 160, color: const Color(0xFFE9E7F5)),
+                      child: Container(
+                          height: 160, color: const Color(0xFFE9E7F5)),
                     ),
                   ),
                 ),
@@ -60,16 +70,17 @@ class ProfileScreen extends StatelessWidget {
                           child: CircleAvatar(
                             radius: 33,
                             backgroundImage: CachedNetworkImageProvider(
-                              u?.profileImage ?? 'https://source.unsplash.com/200x200/?portrait',
+                              ImageUrl.profile(u?.profileImage),
                             ),
                           ),
                         ),
-                      ), 
+                      ),
                       Positioned(
                         right: 0,
                         bottom: 0,
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () => Navigator.of(context)
+                              .pushNamed(AppRoutes.personalInfo),
                           borderRadius: BorderRadius.circular(999),
                           child: Container(
                             padding: const EdgeInsets.all(7),
@@ -77,7 +88,8 @@ class ProfileScreen extends StatelessWidget {
                               gradient: AppColors.primaryGradient(),
                               borderRadius: BorderRadius.circular(999),
                             ),
-                            child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                            child: const Icon(Icons.edit,
+                                size: 16, color: Colors.white),
                           ),
                         ),
                       )
@@ -87,31 +99,67 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 44),
-            Text(u?.name ?? 'Guest User', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+            Text(u?.name ?? 'Guest User',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w900)),
             const SizedBox(height: 4),
-            Text(u?.email ?? 'guest@salonease.app', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+            Text(u?.email ?? 'guest@salonease.app',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 4),
-            Text(u?.phone ?? '+91 ***** *****', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+            Text(u?.phone ?? '+91 ***** *****',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 14),
             Row(
               children: [
-                Expanded(child: _StatBox(label: 'Bookings', value: '${u?.bookingsCount ?? 2}')),
+                Expanded(
+                    child: _StatBox(
+                        label: 'Bookings', value: '${u?.bookingsCount ?? 2}')),
                 const SizedBox(width: 10),
-                Expanded(child: _StatBox(label: 'Points', value: '${u?.points ?? 120}')),
+                Expanded(
+                    child: _StatBox(
+                        label: 'Points', value: '${u?.points ?? 120}')),
                 const SizedBox(width: 10),
-                Expanded(child: _StatBox(label: 'Reviews', value: '${u?.reviewsCount ?? 8}')),
+                Expanded(
+                    child: _StatBox(
+                        label: 'Reviews', value: '${u?.reviewsCount ?? 8}')),
               ],
             ),
             const SizedBox(height: 16),
-            Text('Account Settings', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+            Text('Account Settings',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w900)),
             const SizedBox(height: 10),
             _Tile(
               icon: IconlyLight.profile,
               title: 'Personal Info',
-              onTap: () => Navigator.of(context).pushNamed(AppRoutes.personalInfo),
+              onTap: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.personalInfo),
             ),
-            _Tile(icon: IconlyLight.notification, title: 'Notifications', onTap: () {}),
-            _Tile(icon: IconlyLight.ticket, title: 'Refer & Earn', badge: 'NEW', onTap: () {}),
+            _Tile(
+                icon: IconlyLight.notification,
+                title: 'Notifications',
+                onTap: () => _showProfileSnack(
+                    context, 'No new notifications right now.')),
+            _Tile(
+                icon: IconlyLight.ticket,
+                title: 'Refer & Earn',
+                badge: 'NEW',
+                onTap: () {
+                  Clipboard.setData(
+                    const ClipboardData(text: 'Join SalonEase with my invite.'),
+                  );
+                  _showProfileSnack(context, 'Referral invite copied.');
+                }),
             _Tile(
               icon: IconlyLight.setting,
               title: 'Settings',
@@ -125,7 +173,8 @@ class ProfileScreen extends StatelessWidget {
               onTap: () async {
                 await context.read<AuthProvider>().logout();
                 if (!context.mounted) return;
-                Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
               },
             ),
             const SizedBox(height: 16),
@@ -134,6 +183,12 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showProfileSnack(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -153,9 +208,17 @@ class _StatBox extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+          Text(value,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w900)),
           const SizedBox(height: 4),
-          Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+          Text(label,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: AppColors.textSecondary)),
         ],
       ),
     );
@@ -168,7 +231,12 @@ class _Tile extends StatelessWidget {
   final VoidCallback onTap;
   final bool danger;
   final String? badge;
-  const _Tile({required this.icon, required this.title, required this.onTap, this.danger = false, this.badge});
+  const _Tile(
+      {required this.icon,
+      required this.title,
+      required this.onTap,
+      this.danger = false,
+      this.badge});
 
   @override
   Widget build(BuildContext context) {
@@ -184,29 +252,41 @@ class _Tile extends StatelessWidget {
           height: 42,
           width: 42,
           decoration: BoxDecoration(
-            color: danger ? AppColors.danger.withValues(alpha: 0.10) : AppColors.primaryPurple.withValues(alpha: 0.08),
+            color: danger
+                ? AppColors.danger.withValues(alpha: 0.10)
+                : AppColors.primaryPurple.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Icon(icon, color: danger ? AppColors.danger : AppColors.primaryPurple, size: 20),
+          child: Icon(icon,
+              color: danger ? AppColors.danger : AppColors.primaryPurple,
+              size: 20),
         ),
         title: Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.w900, color: danger ? AppColors.danger : null),
+          style: TextStyle(
+              fontWeight: FontWeight.w900,
+              color: danger ? AppColors.danger : null),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (badge != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   gradient: AppColors.primaryGradient(),
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Text(badge!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11)),
+                child: Text(badge!,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 11)),
               ),
             const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded, color: Colors.grey.withValues(alpha: 0.6)),
+            Icon(Icons.chevron_right_rounded,
+                color: Colors.grey.withValues(alpha: 0.6)),
           ],
         ),
         onTap: onTap,
@@ -231,9 +311,16 @@ class _EliteCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('SalonEase Elite', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16)),
+          const Text('SalonEase Elite',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16)),
           const SizedBox(height: 6),
-          Text('$points / 500 points', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.w700)),
+          Text('$points / 500 points',
+              style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontWeight: FontWeight.w700)),
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(999),
@@ -249,4 +336,3 @@ class _EliteCard extends StatelessWidget {
     );
   }
 }
-

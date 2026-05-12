@@ -1,16 +1,16 @@
 # SalonEase
 
-SalonEase is a role-based salon booking demo product.
+SalonEase is a role-based salon booking app built with Flutter, Express, and SQLite.
 
-- Customers can register, log in, browse services, book an appointment, apply coupons, complete a dummy payment, and manage bookings.
-- Admins are salon owners or shop keepers. They log in from the same login page and get an owner dashboard for stats, booking status updates, and adding salon services.
-- Payments are demo-only. Clicking **Complete Demo Payment** records the booking without charging real money.
+- Customers can register, log in, browse services, book appointments, apply coupons, complete a demo payment, and manage bookings.
+- Admins can view shop stats, confirm or cancel bookings, see the full customer list, and add salon services.
+- The AI Style Advisor can call Hugging Face Inference Providers from the backend when `HF_TOKEN` is configured, with a local fallback for development.
 
 ## Tech Stack
 
 - Flutter app in `lib/`
 - Node.js/Express backend in `backend/`
-- SQLite database created locally at `backend/data/salonease.sqlite`
+- SQLite database stored locally in `backend/data/`
 - JWT authentication with `admin` and `user` roles
 
 Use Node.js `22.5.0` or newer because the backend uses the built-in `node:sqlite` module.
@@ -23,8 +23,6 @@ The database seeds these accounts automatically on first backend start:
 | --- | --- | --- |
 | Admin / shop owner | `admin@salonease.com` | `admin123` |
 | Customer | `user@salonease.com` | `user123` |
-
-The login page also has demo buttons to fill these credentials.
 
 ## Backend Setup
 
@@ -47,9 +45,43 @@ Useful backend commands:
 npm start
 npm run dev
 npm run db:reset
+npm run db:show
 ```
 
-`npm run db:reset` deletes and recreates the local SQLite database with demo users, services, and coupons.
+If port `5000` is already in use on Windows:
+
+```powershell
+netstat -ano | findstr :5000
+Stop-Process -Id <PID>
+```
+
+## Database Files
+
+The local database files are:
+
+```text
+backend/data/salonease.sqlite
+backend/data/salonease.sqlite-shm
+backend/data/salonease.sqlite-wal
+```
+
+The main database is `salonease.sqlite`. The `-wal` and `-shm` files are SQLite write-ahead-log sidecar files and are normal while the backend is running.
+
+To reset all local data and recreate demo users, services, and coupons:
+
+```bash
+cd backend
+npm run db:reset
+```
+
+To see stored data from the terminal:
+
+```bash
+cd backend
+npm run db:show
+```
+
+You can also open `backend/data/salonease.sqlite` with a SQLite viewer such as DB Browser for SQLite.
 
 ## Flutter Setup
 
@@ -60,33 +92,44 @@ flutter pub get
 flutter run
 ```
 
-Recommended check before running or deploying:
+For Android emulator testing, keep the backend running on your computer. The app automatically uses:
+
+```text
+http://10.0.2.2:5000
+```
+
+For a physical Android phone, build with your computer LAN IP:
 
 ```bash
-flutter analyze
+flutter run --dart-define=API_BASE_URL=http://YOUR_LAN_IP:5000
+flutter build apk --dart-define=API_BASE_URL=http://YOUR_LAN_IP:5000
 ```
 
-Expected result:
+## Live Hugging Face AI
+
+The Flutter app calls the backend endpoint:
 
 ```text
-No issues found!
+POST /api/ai/style-advisor
 ```
 
-The API base URL is configured in:
+To enable live Hugging Face responses, edit `backend/.env`:
 
-```text
-lib/core/constants/app_strings.dart
+```env
+HF_TOKEN=hf_your_token_here
+HF_MODEL=openai/gpt-oss-120b:cerebras
+HF_BASE_URL=https://router.huggingface.co/v1/chat/completions
 ```
 
-Defaults:
+Create a Hugging Face token with Inference Providers permission, then restart the backend. The API style follows Hugging Face's OpenAI-compatible Inference Providers router: https://huggingface.co/docs/inference-providers/en/tasks/chat-completion
 
-- Web/Desktop/iOS simulator: `http://localhost:5000`
-- Android emulator: `http://10.0.2.2:5000`
+If `HF_TOKEN` is empty, the app still works using the built-in local style recommendation fallback.
 
 ## Main Features
 
 - Single login page with role-based routing
 - Admin dashboard for salon owners
+- Admin customer list
 - Admin booking status management
 - Admin service creation
 - Customer home page with services, search, filters, and wishlist flow
@@ -94,6 +137,7 @@ Defaults:
 - Dummy payment completion
 - Customer booking history and cancellation
 - Profile/settings screens
+- AI Style Advisor with Hugging Face backend integration
 
 ## Coupons
 
@@ -102,29 +146,6 @@ Seeded coupons:
 - `FIRST20`
 - `BEAUTY20`
 - `NEWLOOK`
-
-## Deployment Notes
-
-For a live demo similar to Hugging Face Spaces:
-
-1. Deploy the backend as a Node.js service.
-2. Set backend environment variables from `backend/.env.example`.
-3. Build the Flutter web app.
-4. Serve the Flutter web build as static files.
-5. Update `AppStrings.apiBaseUrl` to the deployed backend URL before building.
-
-For Hugging Face Spaces specifically, use a Docker Space or split deployment:
-
-- Host the Express backend in a Node-capable container.
-- Serve Flutter web output from the same container or another static host.
-- Keep `backend/data/` persistent if you want SQLite data to survive restarts.
-
-## Current Verification
-
-- `flutter pub get` completed successfully.
-- `flutter analyze` completed with no issues.
-- Backend JavaScript syntax checks passed for the main server, database config, auth controller, and booking controller.
-- Local Node version checked: `v22.18.0`.
 
 ## Git Hygiene
 

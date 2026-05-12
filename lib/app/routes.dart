@@ -39,7 +39,8 @@ class AppRoutes {
       case AppRoutes.admin:
         return _page(const AdminDashboardScreen());
       case AppRoutes.serviceDetail:
-        return _page(ServiceDetailScreen(serviceId: routeSettings.arguments as String));
+        return _page(
+            ServiceDetailScreen(serviceId: routeSettings.arguments as String));
       case AppRoutes.payment:
         return _page(const PaymentScreen());
       case AppRoutes.bookingConfirmed:
@@ -58,4 +59,3 @@ class AppRoutes {
   static MaterialPageRoute _page(Widget child) =>
       MaterialPageRoute(builder: (_) => child);
 }
-

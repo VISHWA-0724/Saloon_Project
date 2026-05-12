@@ -21,8 +21,10 @@ class WishlistProvider extends ChangeNotifier {
   }) async {
     await _storage.setWishlistIds(_ids.toList());
     if (token == null || token.isEmpty) return;
-    final api = ApiService.create(token: token, onUnauthorized: onUnauthorized ?? () {});
-    await api.dio.patch('/api/users/wishlist', data: {'wishlist': _ids.toList()});
+    final api = ApiService.create(
+        token: token, onUnauthorized: onUnauthorized ?? () {});
+    await api.dio
+        .patch('/api/users/wishlist', data: {'wishlist': _ids.toList()});
   }
 
   Future<void> toggle(
@@ -84,4 +86,3 @@ class WishlistProvider extends ChangeNotifier {
     }
   }
 }
-

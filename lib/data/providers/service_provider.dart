@@ -4,14 +4,20 @@ import '../models/service_model.dart';
 import '../services/api_service.dart';
 
 class ServiceProvider extends ChangeNotifier {
-  final List<String> categories = const ['All', 'Hair', 'Nails', 'Spa', 'Makeup'];
+  final List<String> categories = const [
+    'All',
+    'Hair',
+    'Nails',
+    'Spa',
+    'Makeup'
+  ];
 
   String _activeCategory = 'All';
   String _query = '';
   double _minPrice = 0;
   double _maxPrice = 5000;
   double _minRating = 0;
-  int _maxDuration = 999;
+  int _maxDuration = 180;
   bool _loading = false;
   List<ServiceModel> _services = const [];
   String? _error;
@@ -29,7 +35,8 @@ class ServiceProvider extends ChangeNotifier {
   List<ServiceModel> get filtered {
     final q = _query.trim().toLowerCase();
     return _services.where((s) {
-      final catOk = _activeCategory == 'All' || s.category.toLowerCase() == _activeCategory.toLowerCase();
+      final catOk = _activeCategory == 'All' ||
+          s.category.toLowerCase() == _activeCategory.toLowerCase();
       final qOk = q.isEmpty ||
           s.title.toLowerCase().contains(q) ||
           s.description.toLowerCase().contains(q) ||
@@ -43,7 +50,8 @@ class ServiceProvider extends ChangeNotifier {
 
   List<ServiceModel> get filteredServices => filtered;
 
-  Future<void> fetchServices({String? token, VoidCallback? onUnauthorized}) async {
+  Future<void> fetchServices(
+      {String? token, VoidCallback? onUnauthorized}) async {
     _loading = true;
     _error = null;
     notifyListeners();
@@ -65,7 +73,8 @@ class ServiceProvider extends ChangeNotifier {
     }
   }
 
-  Future<ServiceModel?> fetchServiceById(String id, {String? token, VoidCallback? onUnauthorized}) async {
+  Future<ServiceModel?> fetchServiceById(String id,
+      {String? token, VoidCallback? onUnauthorized}) async {
     try {
       final api = ApiService.create(
         token: token,
@@ -99,7 +108,7 @@ class ServiceProvider extends ChangeNotifier {
     _minPrice = minPrice;
     _maxPrice = maxPrice;
     _minRating = minRating;
-    _maxDuration = maxDuration;
+    _maxDuration = maxDuration.clamp(15, 180).toInt();
     notifyListeners();
   }
 
@@ -108,7 +117,7 @@ class ServiceProvider extends ChangeNotifier {
     _minPrice = 0;
     _maxPrice = 5000;
     _minRating = 0;
-    _maxDuration = 999;
+    _maxDuration = 180;
     notifyListeners();
   }
 }
@@ -116,4 +125,3 @@ class ServiceProvider extends ChangeNotifier {
 extension _FirstOrNull<E> on Iterable<E> {
   E? get firstOrNull => isEmpty ? null : first;
 }
-

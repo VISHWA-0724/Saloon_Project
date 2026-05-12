@@ -15,4 +15,3 @@ class Helpers {
     return 'SALON${ts.substring(ts.length - 6)}';
   }
 }
-

@@ -51,9 +51,10 @@ class StorageService {
   Future<void> setIsDarkMode(bool v) => _prefs.setBool(_kIsDarkMode, v);
 
   bool get hasSeenOnboarding => _prefs.getBool(_kHasSeenOnboarding) ?? false;
-  Future<void> setHasSeenOnboarding(bool v) => _prefs.setBool(_kHasSeenOnboarding, v);
+  Future<void> setHasSeenOnboarding(bool v) =>
+      _prefs.setBool(_kHasSeenOnboarding, v);
 
   List<String> get wishlistIds => _prefs.getStringList(_kWishlist) ?? const [];
-  Future<void> setWishlistIds(List<String> ids) => _prefs.setStringList(_kWishlist, ids);
+  Future<void> setWishlistIds(List<String> ids) =>
+      _prefs.setStringList(_kWishlist, ids);
 }
-

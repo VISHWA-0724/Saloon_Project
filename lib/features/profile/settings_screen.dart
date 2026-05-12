@@ -26,7 +26,9 @@ class SettingsScreen extends StatelessWidget {
               title: 'Appearance',
               subtitle: theme.isDarkMode ? 'Dark' : 'Light',
               value: theme.isDarkMode,
-              onChanged: (_) => Provider.of<ThemeProvider>(context, listen: false).toggleTheme(),
+              onChanged: (_) =>
+                  Provider.of<ThemeProvider>(context, listen: false)
+                      .toggleTheme(),
             ),
             _SelectTile(
               icon: IconlyLight.document,
@@ -39,7 +41,8 @@ class SettingsScreen extends StatelessWidget {
               title: 'Notifications',
               subtitle: 'Booking alerts & offers',
               value: true,
-              onChanged: (_) => _snack(context, 'Notification prefs placeholder.'),
+              onChanged: (_) =>
+                  _snack(context, 'Notification prefs placeholder.'),
             ),
           ]),
           _Section(title: 'Security & Payment', children: [
@@ -80,7 +83,8 @@ class SettingsScreen extends StatelessWidget {
               icon: IconlyLight.delete,
               title: 'Clear Cache',
               subtitle: 'Cached images: ~18 MB',
-              onTap: () => _snack(context, 'Cache clear placeholder (can wire to imageCache/CacheManager).'),
+              onTap: () => _snack(context,
+                  'Cache clear placeholder (can wire to imageCache/CacheManager).'),
             ),
           ]),
           const SizedBox(height: 10),
@@ -99,16 +103,26 @@ class SettingsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Delete Account', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.danger)),
+                      const Text('Delete Account',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.danger)),
                       const SizedBox(height: 4),
                       Text('This action is irreversible.',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: AppColors.textSecondary)),
                     ],
                   ),
                 ),
                 TextButton(
-                  onPressed: () => _snack(context, 'Delete account endpoint not wired.'),
-                  child: const Text('Delete', style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.w900)),
+                  onPressed: () =>
+                      _snack(context, 'Delete account endpoint not wired.'),
+                  child: const Text('Delete',
+                      style: TextStyle(
+                          color: AppColors.danger,
+                          fontWeight: FontWeight.w900)),
                 )
               ],
             ),
@@ -135,7 +149,11 @@ class _Section extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+          Text(title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w900)),
           const SizedBox(height: 10),
           ...children,
         ],
@@ -150,7 +168,12 @@ class _SwitchTile extends StatelessWidget {
   final String subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
-  const _SwitchTile({required this.icon, required this.title, required this.subtitle, required this.value, required this.onChanged});
+  const _SwitchTile(
+      {required this.icon,
+      required this.title,
+      required this.subtitle,
+      required this.value,
+      required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +209,11 @@ class _SelectTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  const _SelectTile({required this.icon, required this.title, required this.subtitle, required this.onTap});
+  const _SelectTile(
+      {required this.icon,
+      required this.title,
+      required this.subtitle,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -210,9 +237,9 @@ class _SelectTile extends StatelessWidget {
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
         subtitle: Text(subtitle),
-        trailing: Icon(Icons.chevron_right_rounded, color: Colors.grey.withValues(alpha: 0.6)),
+        trailing: Icon(Icons.chevron_right_rounded,
+            color: Colors.grey.withValues(alpha: 0.6)),
       ),
     );
   }
 }
-

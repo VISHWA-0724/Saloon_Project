@@ -39,13 +39,9 @@ class _LoginScreenState extends State<LoginScreen> {
       final route = auth.isAdmin ? AppRoutes.admin : AppRoutes.main;
       navigator.pushNamedAndRemoveUntil(route, (_) => false);
     } else {
-      messenger.showSnackBar(SnackBar(content: Text(auth.error ?? 'Login failed')));
+      messenger
+          .showSnackBar(SnackBar(content: Text(auth.error ?? 'Login failed')));
     }
-  }
-
-  void _fillDemoCredentials({required bool admin}) {
-    _email.text = admin ? 'admin@salonease.com' : 'user@salonease.com';
-    _pass.text = admin ? 'admin123' : 'user123';
   }
 
   @override
@@ -54,7 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final titleStyle = Theme.of(context).textTheme.headlineMedium?.copyWith(
           fontWeight: FontWeight.w800,
           foreground: Paint()
-            ..shader = AppColors.primaryGradient().createShader(const Rect.fromLTWH(0, 0, 260, 60)),
+            ..shader = AppColors.primaryGradient()
+                .createShader(const Rect.fromLTWH(0, 0, 260, 60)),
         );
 
     return Scaffold(
@@ -66,15 +63,24 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Text('SalonEase', style: titleStyle),
                 const SizedBox(height: 10),
-                Text('One login. Admins manage the shop, customers book services.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                Text(
+                    'One login. Admins manage the shop, customers book services.',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.textSecondary)),
                 const SizedBox(height: 18),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 16, offset: Offset(0, 10))],
+                    boxShadow: const [
+                      BoxShadow(
+                          color: Color(0x14000000),
+                          blurRadius: 16,
+                          offset: Offset(0, 10))
+                    ],
                   ),
                   child: Form(
                     key: _formKey,
@@ -87,7 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: Icon(IconlyLight.message),
                             hintText: 'Email',
                           ),
-                          validator: (v) => Helpers.isValidEmail(v ?? '') ? null : 'Enter a valid email',
+                          validator: (v) => Helpers.isValidEmail(v ?? '')
+                              ? null
+                              : 'Enter a valid email',
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
@@ -97,19 +105,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: const Icon(IconlyLight.lock),
                             hintText: 'Password',
                             suffixIcon: IconButton(
-                              onPressed: () => setState(() => _obscure = !_obscure),
-                              icon: Icon(_obscure ? IconlyLight.show : IconlyLight.hide),
+                              onPressed: () =>
+                                  setState(() => _obscure = !_obscure),
+                              icon: Icon(_obscure
+                                  ? IconlyLight.show
+                                  : IconlyLight.hide),
                             ),
                           ),
-                          validator: (v) => (v ?? '').length >= 6 ? null : 'Password must be at least 6 chars',
+                          validator: (v) => (v ?? '').length >= 6
+                              ? null
+                              : 'Password must be at least 6 chars',
                         ),
                         const SizedBox(height: 10),
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(content: Text('Please contact the salon admin to reset your password.')));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Please contact the salon admin to reset your password.')));
                             },
                             child: const Text('Forgot password?'),
                           ),
@@ -120,34 +135,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           text: auth.isLoading ? 'Logging in...' : 'Login',
                           onPressed: auth.isLoading ? null : _submit,
                         ),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: auth.isLoading ? null : () => _fillDemoCredentials(admin: true),
-                                icon: const Icon(Icons.storefront_rounded, size: 18),
-                                label: const Text('Admin Demo'),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: auth.isLoading ? null : () => _fillDemoCredentials(admin: false),
-                                icon: const Icon(IconlyLight.profile, size: 18),
-                                label: const Text('User Demo'),
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.register),
-                  child: const Text('New user? Create Account', style: TextStyle(fontWeight: FontWeight.w700)),
+                  onPressed: () => Navigator.of(context)
+                      .pushReplacementNamed(AppRoutes.register),
+                  child: const Text('New user? Create Account',
+                      style: TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ],
             ),
@@ -157,4 +154,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

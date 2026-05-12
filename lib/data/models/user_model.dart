@@ -24,17 +24,20 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final profileImage = json['profileImage']?.toString().trim();
     return UserModel(
       id: (json['_id'] ?? json['id']).toString(),
       name: (json['name'] ?? '').toString(),
       email: (json['email'] ?? '').toString(),
       phone: (json['phone'] ?? '').toString(),
-      profileImage: json['profileImage']?.toString(),
+      profileImage:
+          profileImage == null || profileImage.isEmpty ? null : profileImage,
       role: (json['role'] ?? 'user').toString(),
-      points: (json['points'] ?? 0) as int,
-      bookingsCount: (json['bookingsCount'] ?? 0) as int,
-      reviewsCount: (json['reviewsCount'] ?? 0) as int,
-      wishlist: ((json['wishlist'] ?? []) as List).map((e) => e.toString()).toList(),
+      points: _asInt(json['points']),
+      bookingsCount: _asInt(json['bookingsCount']),
+      reviewsCount: _asInt(json['reviewsCount']),
+      wishlist:
+          ((json['wishlist'] ?? []) as List).map((e) => e.toString()).toList(),
     );
   }
 
@@ -52,3 +55,8 @@ class UserModel {
       };
 }
 
+int _asInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.round();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
+}

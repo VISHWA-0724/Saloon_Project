@@ -48,4 +48,3 @@ class _SalonEaseRootState extends State<SalonEaseRoot> {
     );
   }
 }
-

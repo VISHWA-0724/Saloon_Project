@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -8,6 +9,7 @@ import '../../app/routes.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/utils/helpers.dart';
+import '../../core/utils/image_url.dart';
 import '../../data/models/service_model.dart';
 import '../../data/providers/auth_provider.dart';
 import '../../data/providers/booking_provider.dart';
@@ -36,7 +38,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   Future<void> _load() async {
     final auth = context.read<AuthProvider>();
     final p = context.read<ServiceProvider>();
-    final s = await p.fetchServiceById(widget.serviceId, token: auth.token, onUnauthorized: auth.logout);
+    final s = await p.fetchServiceById(widget.serviceId,
+        token: auth.token, onUnauthorized: auth.logout);
     if (!mounted) return;
     setState(() {
       _service = s;
@@ -60,9 +63,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               highlightColor: Colors.white,
               child: Column(
                 children: [
-                  Container(height: 240, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18))),
+                  Container(
+                      height: 240,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18))),
                   const SizedBox(height: 14),
-                  Container(height: 18, width: double.infinity, color: Colors.white),
+                  Container(
+                      height: 18, width: double.infinity, color: Colors.white),
                   const SizedBox(height: 10),
                   Container(height: 18, width: 220, color: Colors.white),
                   const SizedBox(height: 20),
@@ -97,7 +105,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     }
 
     final bill = booking.bill();
-    final headerUrl = s.images.isNotEmpty ? s.images.first : AppStrings.unsplashHairSalon;
+    final headerUrl = ImageUrl.first(s.images);
 
     return Scaffold(
       body: Stack(
@@ -115,6 +123,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                   highlightColor: Colors.white,
                   child: Container(color: const Color(0xFFE9E7F5)),
                 ),
+                errorWidget: (_, __, ___) =>
+                    Container(color: const Color(0xFFE9E7F5)),
               ),
             ),
           ),
@@ -128,9 +138,15 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                     onTap: () => Navigator.of(context).pop(),
                   ),
                   const Spacer(),
-                  _CircleIcon(icon: IconlyLight.send, onTap: () {}),
+                  _CircleIcon(
+                    icon: IconlyLight.send,
+                    onTap: () => _copyServiceInfo(s, contactOnly: true),
+                  ),
                   const SizedBox(width: 10),
-                  _CircleIcon(icon: IconlyLight.upload, onTap: () {}),
+                  _CircleIcon(
+                    icon: IconlyLight.upload,
+                    onTap: () => _copyServiceInfo(s),
+                  ),
                 ],
               ),
             ),
@@ -143,8 +159,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               return Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
-                  boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 18, offset: Offset(0, -10))],
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(26)),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Color(0x1A000000),
+                        blurRadius: 18,
+                        offset: Offset(0, -10))
+                  ],
                 ),
                 child: ListView(
                   controller: scrollController,
@@ -164,49 +186,72 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryPurple.withValues(alpha: 0.10),
+                            color:
+                                AppColors.primaryPurple.withValues(alpha: 0.10),
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
                             s.category.toUpperCase(),
-                            style: const TextStyle(color: AppColors.primaryPurple, fontWeight: FontWeight.w800, fontSize: 12),
+                            style: const TextStyle(
+                                color: AppColors.primaryPurple,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 12),
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const Icon(Icons.star_rounded, color: Color(0xFFF6B100), size: 18),
+                        const Icon(Icons.star_rounded,
+                            color: Color(0xFFF6B100), size: 18),
                         const SizedBox(width: 4),
-                        Text('${s.rating.toStringAsFixed(1)} - ${s.reviewCount} reviews',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                        Text(
+                            '${s.rating.toStringAsFixed(1)} - ${s.reviewCount} reviews',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: AppColors.textSecondary)),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(s.title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
+                    Text(s.title,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 10),
                     Row(
                       children: [
                         Text(
                           '${AppStrings.currencySymbol}${s.price}',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w900),
                         ),
                         const SizedBox(width: 10),
                         Text(
                           '${AppStrings.currencySymbol}${s.originalPrice}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppColors.textSecondary,
-                                decoration: TextDecoration.lineThrough,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
                         ),
                         const Spacer(),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryPink.withValues(alpha: 0.10),
+                            color:
+                                AppColors.primaryPink.withValues(alpha: 0.10),
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text('${s.duration} min',
-                              style: const TextStyle(color: AppColors.primaryPink, fontWeight: FontWeight.w800, fontSize: 12)),
+                              style: const TextStyle(
+                                  color: AppColors.primaryPink,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 12)),
                         ),
                       ],
                     ),
@@ -214,19 +259,28 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                     Text(
                       s.description,
                       maxLines: _expanded ? 99 : 3,
-                      overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary, height: 1.45),
+                      overflow: _expanded
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary, height: 1.45),
                     ),
                     const SizedBox(height: 6),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton(
                         onPressed: () => setState(() => _expanded = !_expanded),
-                        child: Text(_expanded ? 'Read less' : 'Read more', style: const TextStyle(fontWeight: FontWeight.w800)),
+                        child: Text(_expanded ? 'Read less' : 'Read more',
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w800)),
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text('Select Date', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+                    Text('Select Date',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 10),
                     SizedBox(
                       height: 74,
@@ -236,7 +290,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         separatorBuilder: (_, __) => const SizedBox(width: 10),
                         itemBuilder: (_, i) {
                           final d = DateTime.now().add(Duration(days: i));
-                          final selected = d.year == booking.date.year && d.month == booking.date.month && d.day == booking.date.day;
+                          final selected = d.year == booking.date.year &&
+                              d.month == booking.date.month &&
+                              d.day == booking.date.day;
                           return InkWell(
                             onTap: () => booking.setDate(d),
                             borderRadius: BorderRadius.circular(16),
@@ -244,10 +300,15 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                               width: 88,
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: selected ? AppColors.primaryPurple : AppColors.primaryPurple.withValues(alpha: 0.06),
+                                color: selected
+                                    ? AppColors.primaryPurple
+                                    : AppColors.primaryPurple
+                                        .withValues(alpha: 0.06),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: selected ? AppColors.primaryPurple : AppColors.border,
+                                  color: selected
+                                      ? AppColors.primaryPurple
+                                      : AppColors.border,
                                 ),
                               ),
                               child: Column(
@@ -256,16 +317,23 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                                   Text(
                                     Helpers.formatDate(d).split(',').first,
                                     style: TextStyle(
-                                      color: selected ? Colors.white : AppColors.textSecondary,
+                                      color: selected
+                                          ? Colors.white
+                                          : AppColors.textSecondary,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 12,
                                     ),
                                   ),
                                   const Spacer(),
                                   Text(
-                                    Helpers.formatDate(d).split(',').last.trim(),
+                                    Helpers.formatDate(d)
+                                        .split(',')
+                                        .last
+                                        .trim(),
                                     style: TextStyle(
-                                      color: selected ? Colors.white : AppColors.textPrimary,
+                                      color: selected
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
@@ -277,13 +345,18 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    Text('Select Time', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+                    Text('Select Time',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 10),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: s.availableSlots.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         mainAxisSpacing: 10,
                         crossAxisSpacing: 10,
@@ -298,10 +371,15 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           child: Container(
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: selected ? AppColors.primaryPurple.withValues(alpha: 0.10) : Colors.transparent,
+                              color: selected
+                                  ? AppColors.primaryPurple
+                                      .withValues(alpha: 0.10)
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: selected ? AppColors.primaryPurple : AppColors.border,
+                                color: selected
+                                    ? AppColors.primaryPurple
+                                    : AppColors.border,
                                 width: selected ? 1.6 : 1,
                               ),
                             ),
@@ -309,7 +387,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                               slot,
                               style: TextStyle(
                                 fontWeight: FontWeight.w800,
-                                color: selected ? AppColors.primaryPurple : AppColors.textPrimary,
+                                color: selected
+                                    ? AppColors.primaryPurple
+                                    : AppColors.textPrimary,
                               ),
                             ),
                           ),
@@ -318,7 +398,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                     ),
                     const SizedBox(height: 14),
                     Text('Enhance Your Service',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900)),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 10),
                     ...List.generate(s.addOns.length, (i) {
                       final a = s.addOns[i];
@@ -327,7 +410,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         margin: const EdgeInsets.only(bottom: 10),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryPurple.withValues(alpha: 0.05),
+                          color:
+                              AppColors.primaryPurple.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: AppColors.border),
                         ),
@@ -343,14 +427,22 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(a.name, style: const TextStyle(fontWeight: FontWeight.w900)),
+                                  Text(a.name,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w900)),
                                   const SizedBox(height: 4),
                                   Text('${a.duration} min',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                              color: AppColors.textSecondary)),
                                 ],
                               ),
                             ),
-                            Text('${AppStrings.currencySymbol}${a.price}', style: const TextStyle(fontWeight: FontWeight.w900)),
+                            Text('${AppStrings.currencySymbol}${a.price}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w900)),
                           ],
                         ),
                       );
@@ -368,7 +460,12 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
-                boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 18, offset: Offset(0, -10))],
+                boxShadow: const [
+                  BoxShadow(
+                      color: Color(0x14000000),
+                      blurRadius: 18,
+                      offset: Offset(0, -10))
+                ],
               ),
               child: Row(
                 children: [
@@ -377,10 +474,17 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Total Price', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                        Text('Total Price',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: AppColors.textSecondary)),
                         const SizedBox(height: 2),
                         Text('${AppStrings.currencySymbol}${bill.total}',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900)),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w900)),
                       ],
                     ),
                   ),
@@ -390,7 +494,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       expanded: true,
                       radius: 30,
                       text: 'Proceed to Book',
-                      onPressed: () => Navigator.of(context).pushNamed(AppRoutes.payment),
+                      onPressed: () =>
+                          Navigator.of(context).pushNamed(AppRoutes.payment),
                     ),
                   )
                 ],
@@ -398,6 +503,21 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  void _copyServiceInfo(ServiceModel service, {bool contactOnly = false}) {
+    final text = contactOnly
+        ? '${service.salonName} - ${service.salonLocation}'
+        : '${service.title} at ${service.salonName}, ${AppStrings.currencySymbol}${service.price}, ${service.duration} min';
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(contactOnly
+            ? 'Salon contact details copied.'
+            : 'Service details copied to share.'),
       ),
     );
   }
@@ -424,4 +544,3 @@ class _CircleIcon extends StatelessWidget {
     );
   }
 }
-

@@ -59,9 +59,9 @@ class GradientButton extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(radius),
         onTap: onPressed,
-        child: expanded ? SizedBox(width: double.infinity, child: child) : child,
+        child:
+            expanded ? SizedBox(width: double.infinity, child: child) : child,
       ),
     );
   }
 }
-

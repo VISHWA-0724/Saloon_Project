@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../features/booking/my_bookings_screen.dart';
+import '../../features/chatbot/style_advisor_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/wishlist/wishlist_screen.dart';
@@ -18,6 +19,7 @@ class _MainLayoutState extends State<MainLayout> {
 
   final _tabs = const [
     HomeScreen(),
+    StyleAdvisorScreen(),
     MyBookingsScreen(),
     WishlistScreen(),
     ProfileScreen(),
@@ -34,4 +36,3 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 }
-

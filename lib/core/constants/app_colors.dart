@@ -19,4 +19,3 @@ class AppColors {
         colors: [primaryPurple, primaryPink],
       );
 }
-

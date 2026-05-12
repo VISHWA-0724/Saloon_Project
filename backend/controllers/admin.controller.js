@@ -45,18 +45,49 @@ const getAllBookings = asyncHandler(async (_req, res) => {
   res.json({ items });
 });
 
+const getCustomers = asyncHandler(async (_req, res) => {
+  const rows = getDB()
+    .prepare(`
+      SELECT
+        u.*,
+        COUNT(b.id) AS booking_total,
+        COALESCE(SUM(CASE WHEN b.status <> 'cancelled' THEN b.total ELSE 0 END), 0) AS total_spent,
+        MAX(b.created_at) AS last_booking_at
+      FROM users u
+      LEFT JOIN bookings b ON b.user_id = u.id
+      WHERE u.role = 'user'
+      GROUP BY u.id
+      ORDER BY u.created_at DESC
+      LIMIT 500
+    `)
+    .all();
+
+  const items = rows.map((row) => ({
+    ...toUser({ ...row, bookings_count: row.booking_total }),
+    totalSpent: Number(row.total_spent || 0),
+    lastBookingAt: row.last_booking_at,
+    createdAt: row.created_at,
+  }));
+
+  res.json({ items });
+});
+
 const updateBookingStatus = asyncHandler(async (req, res) => {
-  const allowed = ['upcoming', 'confirmed', 'past', 'cancelled'];
+  const allowed = ['confirmed', 'cancelled'];
   const status = String(req.body?.status || '').trim();
   if (!allowed.includes(status)) {
     res.status(400);
-    throw new Error('Invalid booking status');
+    throw new Error('Admin can only confirm or cancel a booking');
   }
 
   const booking = getDB().prepare('SELECT * FROM bookings WHERE id = ?').get(req.params.id);
   if (!booking) {
     res.status(404);
     throw new Error('Booking not found');
+  }
+  if (booking.status !== 'upcoming') {
+    res.status(400);
+    throw new Error('Booking status is already locked');
   }
 
   getDB()
@@ -66,4 +97,4 @@ const updateBookingStatus = asyncHandler(async (req, res) => {
   res.json({ ok: true, booking: toBooking(getDB().prepare('SELECT * FROM bookings WHERE id = ?').get(req.params.id)) });
 });
 
-module.exports = { getAllBookings, getDashboard, updateBookingStatus };
+module.exports = { getAllBookings, getCustomers, getDashboard, updateBookingStatus };

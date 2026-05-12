@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../models/user_model.dart';
 import '../services/api_service.dart';
@@ -143,32 +144,47 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> uploadProfileImage(String filePath) async {
+  Future<bool> uploadProfileImage(XFile image) async {
     _loading = true;
     _error = null;
     notifyListeners();
     try {
       final api = _api(logout);
+      final fileName = image.name.isEmpty ? 'profile.jpg' : image.name;
       final form = FormData.fromMap({
-        'image': await MultipartFile.fromFile(filePath),
+        'image': kIsWeb
+            ? MultipartFile.fromBytes(
+                await image.readAsBytes(),
+                filename: fileName,
+              )
+            : await MultipartFile.fromFile(
+                image.path,
+                filename: fileName,
+              ),
       });
       final res = await api.dio.post('/api/users/profile-image', data: form);
       final data = res.data as Map<String, dynamic>;
-      final url = (data['url'] ?? data['profileImage'] ?? '').toString();
-      if (_user != null && url.isNotEmpty) {
-        _user = UserModel(
-          id: _user!.id,
-          name: _user!.name,
-          email: _user!.email,
-          phone: _user!.phone,
-          profileImage: url,
-          role: _user!.role,
-          points: _user!.points,
-          bookingsCount: _user!.bookingsCount,
-          reviewsCount: _user!.reviewsCount,
-          wishlist: _user!.wishlist,
-        );
+      final uploadedUser = data['user'];
+      if (uploadedUser is Map<String, dynamic>) {
+        _user = UserModel.fromJson(uploadedUser);
         await _storage.setUser(_user);
+      } else {
+        final url = (data['url'] ?? data['profileImage'] ?? '').toString();
+        if (_user != null && url.isNotEmpty) {
+          _user = UserModel(
+            id: _user!.id,
+            name: _user!.name,
+            email: _user!.email,
+            phone: _user!.phone,
+            profileImage: url,
+            role: _user!.role,
+            points: _user!.points,
+            bookingsCount: _user!.bookingsCount,
+            reviewsCount: _user!.reviewsCount,
+            wishlist: _user!.wishlist,
+          );
+          await _storage.setUser(_user);
+        }
       }
       _loading = false;
       notifyListeners();
@@ -181,4 +197,3 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 }
-

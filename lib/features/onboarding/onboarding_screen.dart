@@ -25,7 +25,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _goNext() {
     if (_index < 2) {
-      _controller.nextPage(duration: const Duration(milliseconds: 350), curve: Curves.easeOutCubic);
+      _controller.nextPage(
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic);
     } else {
       _finish();
     }
@@ -34,7 +36,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _finish() {
     context.read<StorageService>().setHasSeenOnboarding(true);
     final authed = context.read<AuthProvider>().isAuthenticated;
-    Navigator.of(context).pushReplacementNamed(authed ? AppRoutes.main : AppRoutes.login);
+    Navigator.of(context)
+        .pushReplacementNamed(authed ? AppRoutes.main : AppRoutes.login);
   }
 
   @override
@@ -73,7 +76,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: _finish,
-                      child: const Text('Skip', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                      child: const Text('Skip',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const Spacer(),
@@ -188,9 +194,13 @@ class _Slide extends StatelessWidget {
         const SizedBox(height: 18),
         Row(
           children: [
-            Expanded(child: _FeatureCard(icon: aIcon, title: aTitle, subtitle: aSub)),
+            Expanded(
+                child:
+                    _FeatureCard(icon: aIcon, title: aTitle, subtitle: aSub)),
             const SizedBox(width: 12),
-            Expanded(child: _FeatureCard(icon: bIcon, title: bTitle, subtitle: bSub)),
+            Expanded(
+                child:
+                    _FeatureCard(icon: bIcon, title: bTitle, subtitle: bSub)),
           ],
         ),
       ],
@@ -202,7 +212,8 @@ class _FeatureCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  const _FeatureCard({required this.icon, required this.title, required this.subtitle});
+  const _FeatureCard(
+      {required this.icon, required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -229,9 +240,14 @@ class _FeatureCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                Text(title,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
+                Text(subtitle,
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        fontSize: 12)),
               ],
             ),
           ),
@@ -240,4 +256,3 @@ class _FeatureCard extends StatelessWidget {
     );
   }
 }
-

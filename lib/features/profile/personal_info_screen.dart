@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/image_url.dart';
 import '../../data/providers/auth_provider.dart';
 import '../../shared/widgets/gradient_button.dart';
 
@@ -36,12 +37,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   }
 
   Future<void> _pickAndUpload() async {
-    final img = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final img =
+        await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
     if (img == null || !mounted) return;
-    final ok = await context.read<AuthProvider>().uploadProfileImage(img.path);
+    final ok = await context.read<AuthProvider>().uploadProfileImage(img);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(ok ? 'Profile photo updated' : 'Failed to upload photo')),
+      SnackBar(
+          content:
+              Text(ok ? 'Profile photo updated' : 'Failed to upload photo')),
     );
   }
 
@@ -56,7 +60,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       Navigator.of(context).pop();
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not save profile')));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Could not save profile')));
   }
 
   @override
@@ -79,7 +84,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   child: CircleAvatar(
                     radius: 44,
                     backgroundImage: CachedNetworkImageProvider(
-                      u?.profileImage ?? 'https://source.unsplash.com/200x200/?portrait',
+                      ImageUrl.profile(u?.profileImage),
                     ),
                   ),
                 ),
@@ -95,7 +100,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         color: AppColors.primaryPurple,
                         borderRadius: BorderRadius.circular(999),
                       ),
-                      child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
+                      child: const Icon(Icons.camera_alt_rounded,
+                          color: Colors.white, size: 18),
                     ),
                   ),
                 ),
@@ -110,7 +116,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 TextFormField(
                   controller: _name,
                   decoration: const InputDecoration(hintText: 'Full name'),
-                  validator: (v) => (v ?? '').trim().length >= 2 ? null : 'Enter a valid name',
+                  validator: (v) => (v ?? '').trim().length >= 2
+                      ? null
+                      : 'Enter a valid name',
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -119,8 +127,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   decoration: const InputDecoration(hintText: 'Phone number'),
                   validator: (v) {
                     final phone = (v ?? '').trim();
-                    if (!RegExp(r'^[0-9]+$').hasMatch(phone)) return 'Phone must be numeric';
-                    if (phone.length < 10) return 'Phone must be at least 10 digits';
+                    if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+                      return 'Phone must be numeric';
+                    }
+                    if (phone.length < 10) {
+                      return 'Phone must be at least 10 digits';
+                    }
                     return null;
                   },
                 ),

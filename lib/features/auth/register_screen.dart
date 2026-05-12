@@ -41,7 +41,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _submit() async {
     final messenger = ScaffoldMessenger.of(context);
     if (!_terms) {
-      messenger.showSnackBar(const SnackBar(content: Text('Accept Terms & Conditions.')));
+      messenger.showSnackBar(
+          const SnackBar(content: Text('Accept Terms & Conditions.')));
       return;
     }
     if (!_formKey.currentState!.validate()) return;
@@ -57,7 +58,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (ok) {
       navigator.pushNamedAndRemoveUntil(AppRoutes.main, (_) => false);
     } else {
-      messenger.showSnackBar(SnackBar(content: Text(auth.error ?? 'Register failed')));
+      messenger.showSnackBar(
+          SnackBar(content: Text(auth.error ?? 'Register failed')));
     }
   }
 
@@ -67,7 +69,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final titleStyle = Theme.of(context).textTheme.headlineMedium?.copyWith(
           fontWeight: FontWeight.w800,
           foreground: Paint()
-            ..shader = AppColors.primaryGradient().createShader(const Rect.fromLTWH(0, 0, 260, 60)),
+            ..shader = AppColors.primaryGradient()
+                .createShader(const Rect.fromLTWH(0, 0, 260, 60)),
         );
 
     return Scaffold(
@@ -81,14 +84,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Text('SalonEase', style: titleStyle),
               const SizedBox(height: 10),
               Text('Create your account',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: AppColors.textSecondary)),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 16, offset: Offset(0, 10))],
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Color(0x14000000),
+                        blurRadius: 16,
+                        offset: Offset(0, 10))
+                  ],
                 ),
                 child: Form(
                   key: _formKey,
@@ -96,24 +107,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       TextFormField(
                         controller: _name,
-                        decoration: const InputDecoration(prefixIcon: Icon(IconlyLight.profile), hintText: 'Full name'),
-                        validator: (v) => (v ?? '').trim().length >= 2 ? null : 'Enter your name',
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(IconlyLight.profile),
+                            hintText: 'Full name'),
+                        validator: (v) => (v ?? '').trim().length >= 2
+                            ? null
+                            : 'Enter your name',
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _email,
                         keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(prefixIcon: Icon(IconlyLight.message), hintText: 'Email'),
-                        validator: (v) => _emailRegex.hasMatch((v ?? '').trim()) ? null : 'Enter a valid email',
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(IconlyLight.message),
+                            hintText: 'Email'),
+                        validator: (v) => _emailRegex.hasMatch((v ?? '').trim())
+                            ? null
+                            : 'Enter a valid email',
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _phone,
                         keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(prefixIcon: Icon(IconlyLight.call), hintText: 'Phone'),
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(IconlyLight.call),
+                            hintText: 'Phone'),
                         validator: (v) {
                           final phone = (v ?? '').trim();
-                          if (!_phoneRegex.hasMatch(phone)) return 'Phone must be numeric and 10+ digits';
+                          if (!_phoneRegex.hasMatch(phone)) {
+                            return 'Phone must be numeric and 10+ digits';
+                          }
                           return null;
                         },
                       ),
@@ -125,8 +148,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           prefixIcon: const Icon(IconlyLight.lock),
                           hintText: 'Password',
                           suffixIcon: IconButton(
-                            onPressed: () => setState(() => _obscure = !_obscure),
-                            icon: Icon(_obscure ? IconlyLight.show : IconlyLight.hide),
+                            onPressed: () =>
+                                setState(() => _obscure = !_obscure),
+                            icon: Icon(
+                                _obscure ? IconlyLight.show : IconlyLight.hide),
                           ),
                         ),
                         validator: (v) => _passwordRegex.hasMatch(v ?? '')
@@ -137,13 +162,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       TextFormField(
                         controller: _confirm,
                         obscureText: _obscure,
-                        decoration: const InputDecoration(prefixIcon: Icon(IconlyLight.lock), hintText: 'Confirm password'),
-                        validator: (v) => (v ?? '') == _pass.text ? null : 'Passwords do not match',
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(IconlyLight.lock),
+                            hintText: 'Confirm password'),
+                        validator: (v) => (v ?? '') == _pass.text
+                            ? null
+                            : 'Passwords do not match',
                       ),
                       const SizedBox(height: 10),
                       Row(
                         children: [
-                          Checkbox(value: _terms, onChanged: (v) => setState(() => _terms = v ?? false)),
+                          Checkbox(
+                              value: _terms,
+                              onChanged: (v) =>
+                                  setState(() => _terms = v ?? false)),
                           Expanded(
                             child: Text.rich(
                               TextSpan(
@@ -151,22 +183,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 children: [
                                   TextSpan(
                                     text: 'Terms & Conditions',
-                                    style: const TextStyle(color: AppColors.primaryPurple, fontWeight: FontWeight.w700),
+                                    style: const TextStyle(
+                                        color: AppColors.primaryPurple,
+                                        fontWeight: FontWeight.w700),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Terms link not configured.')),
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                  'Terms link not configured.')),
                                         );
                                       },
                                   ),
                                   const TextSpan(text: ' and '),
                                   TextSpan(
                                     text: 'Privacy Policy',
-                                    style: const TextStyle(color: AppColors.primaryPink, fontWeight: FontWeight.w700),
+                                    style: const TextStyle(
+                                        color: AppColors.primaryPink,
+                                        fontWeight: FontWeight.w700),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Privacy link not configured.')),
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                  'Privacy link not configured.')),
                                         );
                                       },
                                   ),
@@ -188,8 +230,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 14),
               TextButton(
-                onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.login),
-                child: const Text('Already have account? Login', style: TextStyle(fontWeight: FontWeight.w700)),
+                onPressed: () =>
+                    Navigator.of(context).pushReplacementNamed(AppRoutes.login),
+                child: const Text('Already have account? Login',
+                    style: TextStyle(fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -198,4 +242,3 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-

@@ -152,15 +152,6 @@ const createBooking = asyncHandler(async (req, res) => {
 });
 
 const getMyBookings = asyncHandler(async (req, res) => {
-  const today = new Date().toISOString().slice(0, 10);
-  getDB()
-    .prepare(`
-      UPDATE bookings
-      SET status = 'past', updated_at = ?
-      WHERE user_id = ? AND status IN ('upcoming', 'confirmed') AND date < ?
-    `)
-    .run(now(), req.userId, today);
-
   const rows = getDB()
     .prepare('SELECT * FROM bookings WHERE user_id = ? ORDER BY date DESC, created_at DESC LIMIT 100')
     .all(req.userId);
@@ -172,7 +163,7 @@ const getMyBookings = asyncHandler(async (req, res) => {
       acc[key].push(booking);
       return acc;
     },
-    { upcoming: [], past: [], cancelled: [], confirmed: [] }
+    { upcoming: [], cancelled: [], confirmed: [] }
   );
 
   res.json({ grouped, items });
@@ -185,6 +176,10 @@ const cancelBooking = asyncHandler(async (req, res) => {
   if (!booking) {
     res.status(404);
     throw new Error('Booking not found');
+  }
+  if (booking.status !== 'upcoming') {
+    res.status(400);
+    throw new Error('This booking is already locked by the salon');
   }
   if (booking.date <= new Date().toISOString().slice(0, 10)) {
     res.status(400);
@@ -213,9 +208,9 @@ const rescheduleBooking = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Booking not found');
   }
-  if (booking.status === 'cancelled') {
+  if (booking.status !== 'upcoming') {
     res.status(400);
-    throw new Error('Cancelled booking cannot be rescheduled');
+    throw new Error('This booking is already locked by the salon');
   }
 
   const conflict = getDB()

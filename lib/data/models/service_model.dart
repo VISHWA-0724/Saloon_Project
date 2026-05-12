@@ -11,11 +11,12 @@ class ServiceAddOn {
 
   factory ServiceAddOn.fromJson(Map<String, dynamic> json) => ServiceAddOn(
         name: (json['name'] ?? '').toString(),
-        price: (json['price'] ?? 0) as int,
-        duration: (json['duration'] ?? 0) as int,
+        price: _asInt(json['price']),
+        duration: _asInt(json['duration']),
       );
 
-  Map<String, dynamic> toJson() => {'name': name, 'price': price, 'duration': duration};
+  Map<String, dynamic> toJson() =>
+      {'name': name, 'price': price, 'duration': duration};
 }
 
 class ServiceModel {
@@ -56,20 +57,31 @@ class ServiceModel {
         title: (json['title'] ?? '').toString(),
         category: (json['category'] ?? '').toString(),
         description: (json['description'] ?? '').toString(),
-        price: (json['price'] ?? 0) as int,
-        originalPrice: (json['originalPrice'] ?? 0) as int,
-        duration: (json['duration'] ?? 0) as int,
-        images: ((json['images'] ?? []) as List).map((e) => e.toString()).toList(),
+        price: _asInt(json['price']),
+        originalPrice: _asInt(json['originalPrice'] ?? json['price']),
+        duration: _asInt(json['duration']),
+        images: ((json['images'] ?? []) as List)
+            .map((e) => e.toString().trim())
+            .where((url) => url.isNotEmpty)
+            .toList(),
         rating: ((json['rating'] ?? 0).toDouble()),
-        reviewCount: (json['reviewCount'] ?? 0) as int,
+        reviewCount: _asInt(json['reviewCount']),
         addOns: ((json['addOns'] ?? []) as List)
             .map((e) => ServiceAddOn.fromJson(e as Map<String, dynamic>))
             .toList(),
-        availableSlots: ((json['availableSlots'] ?? []) as List).map((e) => e.toString()).toList(),
+        availableSlots: ((json['availableSlots'] ?? []) as List)
+            .map((e) => e.toString())
+            .toList(),
         salonName: (json['salonName'] ?? 'SalonEase Studio').toString(),
-        salonLocation: (json['salonLocation'] ?? 'Premium Street, City').toString(),
+        salonLocation:
+            (json['salonLocation'] ?? 'Premium Street, City').toString(),
       );
 
   String get heroTag => 'service_$id';
 }
 
+int _asInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.round();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
+}
