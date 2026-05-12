@@ -125,6 +125,75 @@ Create a Hugging Face token with Inference Providers permission, then restart th
 
 If `HF_TOKEN` is empty, the app still works using the built-in local style recommendation fallback.
 
+## Hugging Face Backend Deployment
+
+Create a Hugging Face **Docker Space** for the backend. The deploy files are inside `backend/`:
+
+```text
+backend/Dockerfile
+backend/.dockerignore
+backend/README.md
+```
+
+Add these as **Secrets** in Space Settings:
+
+```text
+JWT_SECRET=<generated random string>
+JWT_REFRESH_SECRET=<generated random string>
+HF_TOKEN=hf_your_huggingface_token
+```
+
+Generate the JWT strings locally:
+
+```powershell
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+```
+
+Add these as **Variables** in Space Settings:
+
+```text
+PORT=7860
+SQLITE_PATH=/data/salonease.sqlite
+CLIENT_URL=https://YOUR_USERNAME-YOUR_SPACE_NAME.hf.space
+NODE_ENV=production
+HF_MODEL=openai/gpt-oss-120b:cerebras
+HF_BASE_URL=https://router.huggingface.co/v1/chat/completions
+```
+
+Push only the backend folder to the Space:
+
+```powershell
+git clone https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME salonease-hf-backend
+Copy-Item -Path .\backend\* -Destination .\salonease-hf-backend -Recurse -Force -Exclude node_modules,data,uploads,.env
+cd salonease-hf-backend
+git add .
+git commit -m "Deploy SalonEase backend"
+git push
+```
+
+After it deploys, your backend URL will be:
+
+```text
+https://YOUR_USERNAME-YOUR_SPACE_NAME.hf.space
+```
+
+Build the Android app against that backend:
+
+```powershell
+flutter build apk --release --dart-define=API_BASE_URL=https://YOUR_USERNAME-YOUR_SPACE_NAME.hf.space
+```
+
+PS C:\Users\essai\Downloads\salonease-hf-backend> node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+>> node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+>> 
+d58c087e7f8a1d485934cb00f7a6531d45901754cc3befb3ad5ec5013b12240a306b08d2aa33fc3f6d0d051e40cf1e7c
+a2bb0e5d8e1c25b8804a159833e1f1242c3297ea8e4a4600b83b8fb4967dae3a08aa5d3a0f935d0f58c6cba24bab2635
+PS C:\Users\essai\Downloads\salonease-hf-backend> 
+
+
+Hugging Face Docker Spaces expose the port configured in the Space README metadata, and Spaces secrets/variables are available to the container as environment variables. Docker Space data is temporary unless you enable persistent storage; with persistent storage, `/data` is the correct place for SQLite.
+
 ## Main Features
 
 - Single login page with role-based routing
