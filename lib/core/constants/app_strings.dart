@@ -2,16 +2,44 @@ import 'package:flutter/foundation.dart';
 
 class AppStrings {
   static const _definedApiBaseUrl = String.fromEnvironment('API_BASE_URL');
+  static const _productionApiBaseUrl =
+      'https://vishwam2007-salonease-backend.hf.space';
 
   static String get apiBaseUrl {
-    if (_definedApiBaseUrl.trim().isNotEmpty) {
-      return _definedApiBaseUrl.trim();
+    final configured = _normalizeApiBaseUrl(_definedApiBaseUrl);
+    if (configured.isNotEmpty) {
+      return configured;
+    }
+    if (kReleaseMode) {
+      return _productionApiBaseUrl;
     }
     if (kIsWeb) return 'http://localhost:5000';
     if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:5000';
     }
     return 'http://localhost:5000';
+  }
+
+  static String _normalizeApiBaseUrl(String value) {
+    var trimmed = value.trim();
+    while (trimmed.endsWith('/')) {
+      trimmed = trimmed.substring(0, trimmed.length - 1);
+    }
+    final uri = Uri.tryParse(trimmed);
+    if (uri == null || uri.host.toLowerCase() != 'huggingface.co') {
+      return trimmed;
+    }
+
+    final segments = uri.pathSegments;
+    final spacesIndex =
+        segments.indexWhere((segment) => segment.toLowerCase() == 'spaces');
+    if (spacesIndex < 0 || segments.length <= spacesIndex + 2) {
+      return trimmed;
+    }
+
+    final owner = segments[spacesIndex + 1].toLowerCase();
+    final space = segments[spacesIndex + 2].toLowerCase();
+    return 'https://$owner-$space.hf.space';
   }
 
   static const appName = 'SalonEase';

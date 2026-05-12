@@ -70,7 +70,10 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _error = 'Login failed. Please check your credentials.';
+      _error = _messageFromError(
+        e,
+        'Login failed. Please check your credentials.',
+      );
       _loading = false;
       notifyListeners();
       return false;
@@ -103,7 +106,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _error = 'Registration failed. Try again.';
+      _error = _messageFromError(e, 'Registration failed. Try again.');
       _loading = false;
       notifyListeners();
       return false;
@@ -136,8 +139,8 @@ class AuthProvider extends ChangeNotifier {
       _loading = false;
       notifyListeners();
       return true;
-    } catch (_) {
-      _error = 'Could not update profile.';
+    } catch (e) {
+      _error = _messageFromError(e, 'Could not update profile.');
       _loading = false;
       notifyListeners();
       return false;
@@ -189,11 +192,41 @@ class AuthProvider extends ChangeNotifier {
       _loading = false;
       notifyListeners();
       return true;
-    } catch (_) {
-      _error = 'Could not upload image.';
+    } catch (e) {
+      _error = _messageFromError(e, 'Could not upload image.');
       _loading = false;
       notifyListeners();
       return false;
     }
+  }
+
+  String _messageFromError(Object error, String fallback) {
+    if (error is DioException) {
+      final wrapped = error.error;
+      if (wrapped is AppException && wrapped.message.trim().isNotEmpty) {
+        return wrapped.message;
+      }
+
+      final data = error.response?.data;
+      if (data is Map<String, dynamic>) {
+        final message = data['message']?.toString().trim();
+        if (message != null && message.isNotEmpty) return message;
+      }
+
+      if (error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.receiveTimeout ||
+          error.type == DioExceptionType.connectionError) {
+        return 'Cannot reach the backend. Check your internet connection or API URL.';
+      }
+
+      final message = error.message?.trim();
+      if (message != null && message.isNotEmpty) return message;
+    }
+
+    if (error is AppException && error.message.trim().isNotEmpty) {
+      return error.message;
+    }
+
+    return fallback;
   }
 }

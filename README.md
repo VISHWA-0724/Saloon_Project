@@ -105,6 +105,16 @@ flutter run --dart-define=API_BASE_URL=http://YOUR_LAN_IP:5000
 flutter build apk --dart-define=API_BASE_URL=http://YOUR_LAN_IP:5000
 ```
 
+Release Android builds default to the deployed SalonEase Space backend:
+
+```text
+https://vishwam2007-salonease-backend.hf.space
+```
+
+You can still override it for any build with `--dart-define=API_BASE_URL=...`.
+Use the direct `*.hf.space` runtime URL for the API, not the
+`huggingface.co/spaces/...` project page.
+
 ## Live Hugging Face AI
 
 The Flutter app calls the backend endpoint:
@@ -181,7 +191,7 @@ https://YOUR_USERNAME-YOUR_SPACE_NAME.hf.space
 Build the Android app against that backend:
 
 ```powershell
-flutter build apk --release --dart-define=API_BASE_URL=https://YOUR_USERNAME-YOUR_SPACE_NAME.hf.space
+flutter build apk --release --dart-define=API_BASE_URL=https://vishwam2007-salonease-backend.hf.space
 ```
 
 PS C:\Users\essai\Downloads\salonease-hf-backend> node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
